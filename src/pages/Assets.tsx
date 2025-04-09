@@ -3,6 +3,7 @@ import { Package, Filter, Plus, Search, MoreVertical } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { Asset } from '../lib/types';
 import AddAssetForm from '../components/AddAssetForm';
+import Layout from '../components/Layout';
 
 const Assets = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -35,7 +36,9 @@ const Assets = () => {
   const filteredAssets = assets.filter(asset => {
     const matchesSearch = asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          asset.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         asset.location.toLowerCase().includes(searchQuery.toLowerCase());
+                         asset.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (asset.employee_name && asset.employee_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                         (asset.employee_id && asset.employee_id.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const matchesFilter = selectedFilter === 'all' || asset.status.toLowerCase() === selectedFilter;
     
@@ -43,7 +46,7 @@ const Assets = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Layout>
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -124,6 +127,12 @@ const Assets = () => {
                       Location
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Employee
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Employee ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Value
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -158,6 +167,12 @@ const Assets = () => {
                         {asset.location}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {asset.employee_name || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {asset.employee_id || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         ${asset.value.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -177,10 +192,13 @@ const Assets = () => {
       {showAddForm && (
         <AddAssetForm
           onClose={() => setShowAddForm(false)}
-          onSuccess={loadAssets}
+          onSuccess={() => {
+            loadAssets();
+            setShowAddForm(false);
+          }}
         />
       )}
-    </div>
+    </Layout>
   );
 };
 

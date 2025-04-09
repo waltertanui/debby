@@ -9,6 +9,8 @@ export interface Asset {
   created_at: string;
   updated_at: string;
   assigned_to?: string;
+  employee_name?: string;
+  employee_id?: string;
   lifecycle_stage?: 'new' | 'in-use' | 'maintenance' | 'retired';
   next_maintenance?: string;
   notes?: string;
